@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Comment organiser un gros projet backbone ?</title>
+
+    <meta name="description" content="Comment organiser un gros projet backbone ?">
+    <meta name="author" content="Espeon & Fabien0102">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/moon.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+      if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+      }
+    </script>
+
+    <!-- If the origin includes 'metidia.com', use the CDN versions of Bootstrap -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+
+      if( window.location.origin.match( /metidia\.com/gi ) ) {
+        link.href = '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.min.css';
+      } else {
+        link.href = 'bower_components/bootstrap/dist/css/bootstrap.min.css';
+      }
+      var head = document.getElementsByTagName( 'head' )[0];
+      var firstLink = head.getElementsByTagName( 'link' )[0];
+      head.insertBefore( link, firstLink );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h1>
+            Enlarge your <span>backbone</span> project
+          </h1>
+          <h2>
+            <small>Comment organiser son projet de façon modulaire ?</small>
+          </h2>
+          <p>
+            <small>Présenté par Nicolas CARLO (<a href="http://twitter.com/nicoespeon">@nicoespeon</a>) et Fabien BERNARD (<a href="http://twitter/fabien0102">@fabien0102</a>)</small>
+          </p>
+        </section>
+
+        <section>
+          <section>
+            <h2><span>Kikon</span> est ?</h2>
+
+            <div class="row">
+              <!-- Nicolas -->
+              <div class="col-xs-6">
+                <img src="img/nicoespeon.png" alt="" height="200px">
+                <h3>Nicolas CARLO</h3>
+                <p><small>VP of Engineering</small></p>
+              </div>
+
+              <!-- Fabien -->
+              <div class="col-xs-6">
+                <img src="img/fabien0102.png" alt="" height="200px">
+                <h3>Fabien BERNARD</h3>
+                <p><small>CTO</small></p>
+              </div>
+            </div>
+
+            <div class="row">
+              <img src="img/metidia-vertical.png" alt="" class="no-border">
+            </div>
+          </section>
+
+          <section>
+            <h2><span>Saykoikon</span> fait ?</h2>
+
+            <div class="row islet">
+              <img src="img/vinoga.png" alt="" class="no-border">
+              <p>Jeu social sur le thème du vin dans lequel on peut<br><em>acheter en vrai les bouteilles que l'on produit virtuellement</em></p>
+            </div>
+
+            <div class="text-left">
+              <ul>
+                <li>
+                  En HTML 5… <em>‘‘full-stack JavaScript’’</em>
+                  <ul>
+                    <li><strong>Backbone.js</strong> + Marionette</li>
+                    <li>Node.js + MongoDB</li>
+                    <li>Grunt, Mocha, Yeoman, …</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>
+              Les gars, ce soir on fait un proto !<br>
+              <small>- un manager un peu trop confiant</small>
+            </h2>
+
+            <img src="img/manager-stuff.jpg" alt="" class="illustration">
+
+            <pre><code data-trim contenteditable class="javascript">
+// Probablement à l'arrache, dans un `main.js` FTW
+// Note - pas besoin de routage pour nous donc on fait sans =)
+$(function() {
+  // (…)
+
+  // On prépare nos bouteilles
+  var bottlesModel = Backbone.Model.extend({ ... });
+  var bottlesCollection = Backbone.Collection.extend({ ... });
+  var bottlesView = Backbone.View.extend({ ... });
+  var bottlesCollectionView = Backbone.View.extend({ ... });
+
+  // (…)
+
+  // Et on initialise tout le monde !
+  var myBottlesList = new bottlesCollection();
+  myBottlesList.fetch();
+
+  var myBottlesListView = new bottlesCollectionView({
+    collection: myBottlesList
+  });
+  myBottlesListView.$el.appendTo("#bottom-bar");
+  myBottlesListView.render();
+
+  // (…)
+})();
+          </code></pre>
+          </section>
+
+          <section>
+            <h2>
+              Le lendemain<br>
+              <small>- aka The Hangover</small>
+            </h2>
+
+            <img src="img/the-hangover.jpg" alt="" class="illustration--right">
+
+            <pre><code data-trim contenteditable class="javascript">
+$(function() {
+  // (…)
+
+  // On prépare nos bouteilles
+  var bottlesModel = Backbone.Model.extend({ ... });
+  var bottlesCollection = Backbone.Collection.extend({ ... });
+  var bottlesView = Backbone.View.extend({ ... });
+  var bottlesCollectionView = Backbone.View.extend({ ... });
+
+  // On prépare nos bâtiments
+  var buildingsModel = Backbone.Model.extend({ ... });
+  var buildingsCollection = Backbone.Collection.extend({ ... });
+  var buildingsView = Backbone.View.extend({ ... });
+  var buildingsCollectionView = Backbone.View.extend({ ... });
+
+  // On prépare nos cépages
+  var cepagesModel = Backbone.Model.extend({ ... });
+  var cepagesCollection = Backbone.Collection.extend({ ... });
+  var cepagesView = Backbone.View.extend({ ... });
+  var cepagesCollectionView = Backbone.View.extend({ ... });
+
+  // (…)
+  // Idem avec nos ressources, nos timers, nos dialogs, nos rewards, etc.
+  // 3.234 lignes plus tard
+  // (…)
+
+  // Et on initialise tout le monde !
+  var myBottlesList = new bottlesCollection();
+  var myBuildingsList = new buildingsCollection();
+  var myCepagesList = new cepagesCollection();
+  myBottlesList.fetch();
+  myBuildingsList.fetch();
+  myCepagesList.fetch();
+
+  var myBottlesListView = new bottlesCollectionView({
+    collection: myBottlesList
+  });
+  myBottlesListView.$el.appendTo("#bottom-bar");
+  myBottlesListView.render();
+
+  var myBuildingsListView = new buildingsCollectionView({
+    collection: myBuildingsList
+  });
+  myBuildingsListView.$el.appendTo("#main");
+  myBuildingsListView.render();
+
+  var myCepagesListView = new cepagesCollectionView({
+    collection: myCepagesList
+  });
+  myCepagesListView.$el.appendTo("#aside");
+  myCepagesListView.render();
+
+  // (…)
+})();
+          </code></pre>
+          </section>
+
+          <section>
+            <h2>Tiens, c'est drôle...</h2>
+            <ul>
+              <li>parfois ça plante, parfois ça passe…</li>
+              <li>quand j'enlève ce bout de code y'a tout qui plante !</li>
+              <li>je retrouve plus où on a codé cette boite de dialogue ?!</li>
+              <li>faudrait p'têtr qu'on mette des tests unit... oh wait!</li>
+              <li>le soleil se lève dehors =)</li>
+            </ul>
+          </section>
+
+          <section>
+            <h1>Il faut <span>s'organiser</span>!</h1>
+            <img src="img/tic-tac.png" alt="">
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h1><span>Yaka</span> séparer les fichiers <span>par types</span></h1>
+          </section>
+
+          <section>
+            <h2>Concrètement, ça donne quoi ?</h2>
+            <ul>
+              <li>app/
+                <ul>
+                  <li class="fragment highlight-blue" data-fragment-index="2">main.js</li>
+                  <li class="fragment highlight-red" data-fragment-index="3">
+                    models/
+                    <ul>
+                      <li>bottles.js</li>
+                      <li>buildings.js</li>
+                    </ul>
+                  </li>
+                  <li class="fragment highlight-red" data-fragment-index="3">
+                    collections/
+                  </li>
+                  <li class="fragment highlight-red" data-fragment-index="3">views/</li>
+                  <li class="fragment roll-in" data-fragment-index="1">tests/ <em>(parce-qu'il faut pas déconner non plus)</em></li>
+                </ul>
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>The <span>good</span> parts =)</h2>
+
+            <img src="img/the-good-parts.jpg" alt="" class="illustration">
+
+            <ul>
+              <li>On y voit plus clair quand même !</li>
+              <li>Les tests sont isolés</li>
+              <li>Facile de trouver des exemples pour cette archi</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>The <span>bof</span> parts =/</h2>
+
+            <img src="img/the-bof-parts.jpg" alt="" class="illustration--right">
+
+            <ul>
+              <li>L'achitecture du code <em>ne reflète pas vraiment</em> nos ‘‘modules’’</li>
+              <li>Et mon style, il est pas modulaire mon style ?</li>
+            </ul>
+
+            <div class="text-left islet fragment roll-in">
+              <p>Pis faudra pas oublier :</p>
+              <ul>
+                <li>beware la <em>dépendance</em> entre les ‘‘modules’’</li>
+              </ul>
+            </div>
+          </section>
+
+          <section>
+            <h2>
+              Les questions à se poser<br>
+              <small>- merci Addy Osmani \o/</small></h2>
+            <ul>
+              <li>A quel point ce module est <em>instantanément ré-utilisable</em> ?</li>
+              <li class="fragment roll-in">Mes modules peuvent-ils <em>exister indépendamment</em> ?</li>
+              <li class="fragment roll-in">Mes modules peuvent-ils <em>être testés indépendamment</em> ?</li>
+              <li class="fragment roll-in">Mon application n'est-elle pas trop étroitement liée ?</li>
+              <li class="fragment roll-in">Si une partie de mon appli fail, est-ce-que tout s'écroule ?</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h1>Notre solution<br><small>(proposée)</small></h1>
+          </section>
+
+          <section>
+            <h2>La théorie</h2>
+            <img src="img/architecture.png" alt="" class="no-border">
+            <p>
+              <small>Source - <a href="http://scaleapp.org/">http://scaleapp.org/</a> (inspired by N. Zakas)</small>
+            </p>
+          </section>
+
+          <section>
+            <h2>
+              Un dossier = Un module<br>
+              <small>- Etpicétout !</small>
+            </h2>
+
+            <img src="img/etpicétout.jpg" alt="" class="illustration">
+
+            <ul>
+              <li>app/
+                <ul>
+                  <li class="fragment highlight-blue" data-fragment-index="1">main.js</li>
+                  <li class="fragment highlight-red" data-fragment-index="2">main.less</li>
+                  <li>
+                    modules/
+                    <ul><li>bottles/
+                    <ul>
+                      <li class="fragment highlight-blue" data-fragment-index="1">bottles.js</li>
+                      <li class="fragment highlight-red" data-fragment-index="2">bottles.less</li>
+                      <li class="fragment highlight-blue" data-fragment-index="1">models/</li>
+                      <li class="fragment highlight-blue" data-fragment-index="1">collections/</li>
+                      <li class="fragment highlight-blue" data-fragment-index="1">views/
+                        <ul>
+                          <li>bottles.views.composite.js</li>
+                          <li>bottles.views.item.js</li>
+                        </ul>
+                      </li>
+                      <li>templates/</li>
+                      <li class="fragment highlight-green" data-fragment-index="3">tests/</li>
+                    </ul>
+                  </li>
+                </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>
+              En pratique<br>
+              <small>Les éléments de Bottles</small>
+            </h2>
+            <pre><code data-trim contenteditable class="javascript">
+// bottles.model.js
+// Une seule dépendance -> Application Core
+define( [ "app" ], function( app ) {
+
+  return Backbone.Model.extend({ ... });
+
+});
+            </code></pre>
+            <pre><code data-trim contenteditable class="javascript">
+// bottles.views.item.js
+// Une seule dépendance -> Application Core
+define( [ "app" ], function( app ) {
+
+  return Backbone.Marionette.ItemView.extend({ ... });
+
+});
+            </code></pre>
+          </section>
+
+          <section>
+            <h2>
+              En pratique<br>
+              <small>Le module bottles</small>
+            </h2>
+            <pre><code data-trim contenteditable class="javascript">
+// bottles.js
+define( [
+  "app",
+
+  // Le modèle
+  "bottles/models/bottles",
+
+  // Les vues
+  "bottles/views/bottles.views.item"
+], function( app, Model, ItemView ) {
+
+  // Initialise le module avec les méthodes de base.
+  var Bottles = app.module();
+
+  // On spécifie nos API
+  Bottles.Model = Model.extend( { ... });
+  Bottles.Views.Item = ItemView.extend( { ... });
+
+  // On renvoie le tout
+  return Bottles;
+
+});
+            </code></pre>
+          </section>
+
+          <section>
+            <h2>
+              En pratique<br>
+              <small>Le main.js</small>
+            </h2>
+            <pre><code data-trim contenteditable class="javascript">
+// main.js
+define( [
+  "app",
+
+  // Les modules
+  "bottles/bottles.js"
+], function( app, Bottles ) {
+
+  // Initialise le module avec les méthodes de base.
+  var myBottlesList = new Bottles.Collection();
+  myBottlesList.fetch();
+
+  var myBottlesListView = new Bottles.Views.Collection( {
+    collection: myBottlesList
+  } );
+  myBottlesListView.appendTo( "#bottom-bar" );
+
+});
+            </code></pre>
+          </section>
+
+          <section>
+            <h2>
+              Un module c'est comme un enfant<br>
+              <small>- Merci Monsieur Zakas \o/</small>
+            </h2>
+
+            <img src="img/children-modules.jpg" alt="" class="illustration--right">
+
+            <ul>
+              <li>Les modules doivent <em>garder les mains dans leurs poches</em>
+                <ul>
+                  <li>On ne touche pas au DOM des autres</li>
+                  <li>On ne touche pas aux méthodes des autres</li>
+                </ul>
+              </li>
+              <li class="fragment roll-in"><em>Les modules demandent</em>, ils ne prennent pas</li>
+              <li class="fragment roll-in">Les modules <em>ne laissent pas traîner leurs jouets</em> : pas de variables globales, encapsulation</li>
+              <li class="fragment roll-in">Les modules <em>ne parlent pas à des étrangers</em> : on ne parle pas directement aux autres modules</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h1>Nos outils</h1>
+          </section>
+
+          <section>
+            <h2>
+              Require.js<br>
+              <small>Gestion de dépendances + optimizer avec r.js</small>
+            </h2>
+            <ul>
+              <li>Détermine les dépendances de chaque bout de code</li>
+              <li>Re-compile ces dépendances en <em>un seul fichier JS optimisé</em></li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>
+              Nom de code <span>Brain.js</span><br>
+              <small>Notre pattern Mediator à nous</small>
+            </h2>
+            <ul>
+              <li>Tour de contrôle des modules</li>
+              <li><em>Centralise la communication</em> = <em>découplage des modules</em></li>
+              <li>Écoute les événements intéressants - <strong>Backbone.Event</strong></li>
+              <li>Trigger d'autres événements pour déclencher des actions</li>
+            </ul>
+          </section>
+
+          <section>
+            <img src="img/brain.js.png" alt="" class="no-border" height="700px">
+          </section>
+
+          <section>
+            <h2>
+              Marionette.js<br>
+              <small>Entre autres utilitaires</small>
+            </h2>
+            <ul>
+              <li>Boite à outil indispensable pour gérer des vues de plus en plus complexes</li>
+              <li>Abstraction + cache de l'UI</li>
+              <li>Simplifier la conf.</li>
+              <li>Enregistrer de requests pour découpler son code</li>
+              <li>Sinon y'a <strong>Chaplin</strong> aussi si besoin d'aller plus loin</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Abstraction + cache de l'UI</h3>
+            <pre><code data-trim contenteditable class="html">
+<div class="builds__menu">
+  <ul class="builds__menu__tabs">
+    <li data-ui="tab">Bâtiments</li>
+    <li data-ui="tab">Décorations</li>
+  </ul>
+</div>
+
+<!-- (…) -->
+            </code></pre>
+            <pre><code data-trim contenteditable class="javascript">
+return Backbone.Marionette.ItemView.extend({
+
+  ui: {
+    "tab": "[data-ui~=tab]"
+  },
+
+  events: {
+    "click @ui.tab": "switchTab"
+  }
+
+  // (…)
+
+  highlightTabs: function() {
+
+    this.ui.tab.each(function() {
+      // Do something awesome!
+    });
+
+  }
+
+  // (…)
+
+});
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Simplification de la conf.</h3>
+            <pre><code data-trim contenteditable class="javascript">
+return Backbone.Collection.extend({
+
+  events: {
+    "click": "displayName"
+  }
+
+  appEvents: {
+    "bottles:do:setName": "setName"
+  }
+
+  // (…)
+
+  initialize: function() {
+    Marionette.bindEntityEvents( this, app, Marionette.getOption( this, "appEvents" ) );
+  }
+
+  setName: function( appellation, name ) {
+
+    // Name this bottle
+
+  }
+
+  // (…)
+
+});
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Enregistrer des requests</h3>
+            <pre><code data-trim contenteditable class="javascript">
+return Backbone.Collection.extend({
+
+  requests: {
+
+    getCategories: function() {
+      // Retrieve categories…
+      return categories;
+    }
+
+  },
+
+  // (…)
+
+  initialize: function() {
+    app.reqres.setHandler( "builds:getCategories", this.requests.getCategories, this );
+  }
+
+  // (…)
+
+});
+            </code></pre>
+            <pre><code data-trim contenteditable class="javascript">
+// Pendant ce temps, ailleurs dans le code
+
+var buildsCategories = app.request( "builds:getCategories" );
+
+// (…)
+            </code></pre>
+          </section>
+
+          <section>
+            <h2>Axes d'amélioration</h2>
+            <ul>
+              <li>Améliorer <em>l'init. des modules</em> dans le main</li>
+              <li><em>Multiples Brain.js</em>, parce-que ça grossit vite</li>
+              <li>Différents ‘‘channels’’ pour les événements</li>
+            </ul>
+            <div class="row islet">
+              <div class="col-lg-12">
+                <img src="img/aura.js.png" alt="" height="150px" class="no-border">
+              </div>
+            </div>
+            <p>Des suggestions ?</p>
+          </section>
+        </section>
+
+        <section>
+          <img src="img/questions-time.png" alt="">
+        </section>
+
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Parallax scrolling
+        // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+        // parallaxBackgroundSize: '2100px 900px',
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
